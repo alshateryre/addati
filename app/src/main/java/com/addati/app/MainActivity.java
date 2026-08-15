@@ -64,9 +64,18 @@ public class MainActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.loadUrl("file:///android_asset/index.html");
 
+        requestWorkoutPermissionsIfNeeded();
+    }
+
+    private void requestWorkoutPermissionsIfNeeded() {
+        java.util.ArrayList<String> perms = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 42);
+            perms.add(Manifest.permission.POST_NOTIFICATIONS);
         }
+        if (Build.VERSION.SDK_INT >= 29 && checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+            perms.add(Manifest.permission.ACTIVITY_RECOGNITION);
+        }
+        if (!perms.isEmpty()) requestPermissions(perms.toArray(new String[0]), 42);
     }
 
     @Override
@@ -102,7 +111,17 @@ public class MainActivity extends Activity {
         private final Context context;
         NativeWorkoutBridge(Context context) { this.context = context.getApplicationContext(); }
 
+        private boolean hasWorkoutPermission() {
+            if (Build.VERSION.SDK_INT < 29) return true;
+            return context.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED;
+        }
+
         private void send(String action, String name, String exercise, String setLabel, int rest, double weight, int reps) {
+            if (!hasWorkoutPermission()) {
+                MainActivity a = MainActivity.instance;
+                if (a != null) a.runOnUiThread(a::requestWorkoutPermissionsIfNeeded);
+                return;
+            }
             Intent i = new Intent(context, WorkoutService.class);
             i.setAction(action);
             i.putExtra("name", name);
