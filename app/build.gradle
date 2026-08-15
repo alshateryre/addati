@@ -7,11 +7,11 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.addati.app"
+        applicationId "com.addati.rebuild"
         minSdk 24
         targetSdk 35
-        versionCode 3
-        versionName "2.0"
+        versionCode 1
+        versionName "1.0-rebuild"
     }
 }
 
