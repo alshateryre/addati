@@ -39,3 +39,16 @@ jobs:
         with:
           name: addati-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Package Android signing tools
+        run: |
+          mkdir -p signing-tools/lib
+          cp "$ANDROID_HOME/build-tools/35.0.0/apksigner" signing-tools/
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" signing-tools/lib/
+          cp "$ANDROID_HOME/build-tools/35.0.0/zipalign" signing-tools/
+
+      - name: Upload Android signing tools
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-signing-tools
+          path: signing-tools
