@@ -2,6 +2,7 @@ package com.addati.app;
 
 import android.app.*;
 import android.content.*;
+import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.os.*;
@@ -87,8 +88,10 @@ public class WorkoutService extends Service {
 
         Notification nfy = buildNotification();
         if (Build.VERSION.SDK_INT >= 29) {
-            startForeground(ID, nfy, 0);
-        } else startForeground(ID, nfy);
+            startForeground(ID, nfy, ServiceInfo.FOREGROUND_SERVICE_TYPE_HEALTH);
+        } else {
+            startForeground(ID, nfy);
+        }
         return START_STICKY;
     }
 
